@@ -45,9 +45,11 @@ void setup_wifi() {
 
   WiFi.begin(ssid, password);
 
-  while (WiFi.status() != WL_CONNECTED) {
+  int count = 0;
+  while (WiFi.status() != WL_CONNECTED && count <= 10) {
     delay(500);
     Serial.print(".");
+    count++;
   }
 
   Serial.println("");
@@ -195,6 +197,16 @@ void processStepper()
   Serial.println(newPosition);
 }
 
+void checkConnection()
+{
+  if (WiFi.status() != WL_CONNECTED) {
+    // Blink LED
+    digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+  } else {
+    digitalWrite(LED_BUILTIN, LOW);
+  }
+}
+
 void checkIn()
 {
   char topic[40];
@@ -232,6 +244,7 @@ void setup() {
   //client.setCallback(callback);
 
   timer.setInterval(800, processStepper);
+  timer.setInterval(1000, checkConnection);
   //timer.setInterval(90000, checkIn);
 }
 
